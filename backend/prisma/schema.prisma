@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// Phase 2: Menu
+// ─────────────────────────────────────────────
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  category    String
+  available   Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orderItems  OrderItem[]
+
+  @@map("menu_items")
+}
+
+// ─────────────────────────────────────────────
+// Phase 3: Orders
+// ─────────────────────────────────────────────
+
+enum OrderStatus {
+  pending
+  paid
+  preparing
+  ready
+  completed
+  cancelled
+}
+
+enum PaymentMethod {
+  card
+  cash
+}
+
+model Order {
+  id             String        @id @default(cuid())
+  telegramUserId String
+  telegramUsername String?
+  firstName      String?
+  items          OrderItem[]
+  total          Float
+  status         OrderStatus   @default(pending)
+  paymentMethod  PaymentMethod @default(cash)
+  paymentRef     String?       // Paymob transaction ref
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String   @id @default(cuid())
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId    String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String
+  name       String   // Snapshot at time of order
+  price      Float    // Snapshot at time of order
+  quantity   Int
+
+  @@map("order_items")
+}
