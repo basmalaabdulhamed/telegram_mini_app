@@ -34,7 +34,7 @@ export default function HomePage() {
 
   // Fetch menu
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://telegramminiapp-production-f419.up.railway.app';
     fetch(`${apiUrl}/api/menu`)
       .then((r) => {
         if (!r.ok) throw new Error('Failed to fetch menu');

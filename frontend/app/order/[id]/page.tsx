@@ -35,7 +35,7 @@ export default function OrderPage() {
   const [loading, setLoading] = useState(true);
 
   const fetchOrder = () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://telegramminiapp-production-f419.up.railway.app';
     fetch(`${apiUrl}/api/order/${id}`)
       .then((r) => r.json())
       .then((data) => {

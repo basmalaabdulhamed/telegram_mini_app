@@ -9,7 +9,7 @@ export function createApp() {
   app.use(cors({
     origin: process.env.WEBAPP_URL || '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-staff-pin', 'x-admin-password', 'x-telegram-init-data'],
   }));
   app.use(express.json());
 

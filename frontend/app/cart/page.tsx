@@ -32,7 +32,7 @@ export default function CartPage() {
       }
     } catch {}
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://telegramminiapp-production-f419.up.railway.app';
 
     try {
       const res = await fetch(`${apiUrl}/api/order`, {

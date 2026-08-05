@@ -39,7 +39,7 @@ export default function StaffPage() {
   const [error, setError] = useState('');
   const [advancing, setAdvancing] = useState<string | null>(null);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://telegramminiapp-production-f419.up.railway.app';
 
   const fetchOrders = useCallback(async (staffPin: string) => {
     try {
