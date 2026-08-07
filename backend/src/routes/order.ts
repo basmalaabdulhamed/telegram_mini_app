@@ -1,12 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { z } from 'zod';
+import { telegramAuthMiddleware } from '../lib/telegramAuth';
 
 export const orderRouter = Router();
 
 // Validation schema for order creation
 const CreateOrderSchema = z.object({
-  telegramUserId: z.string(),
+  telegramUserId: z.string().optional(),
   telegramUsername: z.string().optional(),
   firstName: z.string().optional(),
   items: z.array(
@@ -22,14 +23,21 @@ const CreateOrderSchema = z.object({
 /**
  * POST /api/order
  * Creates a new pending order.
+ * Uses verified Telegram user identity from initData when available.
  */
-orderRouter.post('/', async (req: Request, res: Response) => {
+orderRouter.post('/', telegramAuthMiddleware, async (req: Request, res: Response) => {
   const parsed = CreateOrderSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });
   }
 
-  const { telegramUserId, telegramUsername, firstName, items, notes, paymentMethod } = parsed.data;
+  // Prefer cryptographically verified user from initData, fallback to body
+  const tgUser = (req as any).tgUser;
+  const telegramUserId = tgUser?.id ?? parsed.data.telegramUserId ?? 'anonymous';
+  const telegramUsername = tgUser?.username ?? parsed.data.telegramUsername;
+  const firstName = tgUser?.firstName ?? parsed.data.firstName;
+
+  const { items, notes, paymentMethod } = parsed.data;
 
   try {
     // Fetch menu items to get current prices

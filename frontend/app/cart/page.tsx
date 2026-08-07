@@ -17,13 +17,15 @@ export default function CartPage() {
     if (items.length === 0) return;
     setSubmitting(true);
 
-    // Get Telegram user data (Phase 4 will harden this with HMAC verification)
+    // Get Telegram WebApp data
+    let initData = '';
     let telegramUserId = 'anonymous';
     let telegramUsername: string | undefined;
     let firstName: string | undefined;
 
     try {
       const { default: WebApp } = await import('@twa-dev/sdk');
+      initData = WebApp.initData || '';
       const user = WebApp.initDataUnsafe?.user;
       if (user) {
         telegramUserId = String(user.id);
@@ -35,9 +37,13 @@ export default function CartPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://telegramminiapp-production-f419.up.railway.app';
 
     try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      // Send initData for HMAC verification (Phase 4)
+      if (initData) headers['x-telegram-init-data'] = initData;
+
       const res = await fetch(`${apiUrl}/api/order`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           telegramUserId,
           telegramUsername,

@@ -57,17 +57,21 @@ export default function HomePage() {
   // Scroll-spy: update active tab as user scrolls through sections
   useEffect(() => {
     const handleScroll = () => {
-      if (isScrolling.current) return;
+      if (isScrolling.current || categories.length === 0) return;
+
+      let matchedCat = categories[0].category;
       for (const cat of categories) {
         const el = sectionRefs.current[cat.category];
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= 120) {
-            setActiveCategory(cat.category);
+          if (rect.top <= 160) {
+            matchedCat = cat.category;
           }
         }
       }
+      setActiveCategory((prev) => (prev !== matchedCat ? matchedCat : prev));
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [categories]);
